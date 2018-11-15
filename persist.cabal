@@ -25,12 +25,20 @@ source-repository head
   type:     git
   location: git://github.com/minad/persist
 
+flag only-ghc-packages
+    Description: Only use packages that come with GHC
+    default: False
+
 library
         default-language:       Haskell2010
 
         build-depends:          base >= 4.4 && < 5, containers,
-                                bytestring >= 0.10.4 && < 1,
-                                text >= 1.2 && < 1.3
+                                bytestring >= 0.10.4 && < 1
+        if !flag(only-ghc-packages)
+           build-depends:
+             text >= 1.2 && < 1.3
+        else
+           cpp-options: -DONLY_GHC_PACKAGES
 
         hs-source-dirs:         src
 
@@ -50,8 +58,10 @@ test-suite test-persist
                                 QuickCheck,
                                 test-framework,
                                 test-framework-quickcheck2,
-                                persist,
-                                text >= 1.2 && < 1.3
+                                persist
+        if !flag(only-ghc-packages)
+          build-depends:
+            text >= 1.2 && < 1.3
 
         main-is:                Main.hs
         other-modules:          RoundTrip
