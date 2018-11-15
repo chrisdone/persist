@@ -72,9 +72,6 @@ import Data.Map (Map)
 import Data.Proxy
 import Data.Sequence (Seq)
 import Data.Set (Set)
-#ifndef ONLY_GHC_PACKAGES
-import Data.Text (Text)
-#endif
 import Data.Word
 import Foreign (ForeignPtr, Ptr, Storable(..), plusPtr, minusPtr, castPtr,
                 withForeignPtr, mallocBytes, free, allocaBytes)
@@ -92,9 +89,6 @@ import qualified Data.ByteString.Lazy as L
 import qualified Data.ByteString.Short as S
 import qualified Data.ByteString.Short.Internal as S
 import qualified Data.Monoid as M
-#ifndef ONLY_GHC_PACKAGES
-import qualified Data.Text.Encoding as TE
-#endif
 import qualified Data.Tree as T
 
 #include "MachDeps.h"
@@ -581,16 +575,6 @@ instance Persist Char where
     else
       fail "Invalid character"
   {-# INLINE get #-}
-
-#ifndef ONLY_GHC_PACKAGES
-instance Persist Text where
-  put = put . TE.encodeUtf8
-  {-# INLINE put #-}
-  get = do
-    n <- get
-    TE.decodeUtf8 <$> getBytes n
-  {-# INLINE get #-}
-#endif
 
 instance Persist Bool
 instance Persist Ordering
